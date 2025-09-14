@@ -18,5 +18,5 @@ server:
 
 app:
   jwt:
-    secret: "0123456789NNCVG0123456789ABCDEF"
+    secret: "0123456789NNCVGG0123456789ABCDEF"
     issuer: "car-renter"

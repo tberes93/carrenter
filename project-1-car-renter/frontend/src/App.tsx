@@ -1,99 +1,154 @@
-import {Routes, Route, Link, Navigate, useNavigate} from 'react-router-dom';
-import CarList from './pages/CarList.tsx';
-import Login from './pages/Login';
-import NewRental from './pages/NewRental.tsx';
-import VehicleRegister from './pages/VehicleRegister.tsx';
-import ProtectedRoute from './routes/ProtectedRoute';
-import AdminRoute from './routes/AdminRoute';
-import Registration from "./pages/Registration.tsx";
-import {useAuth} from "./auth/AuthContext.tsx";
-import {useState} from "react";
-import {Car, LogIn, LogOut, Menu, UserPlus} from "lucide-react";
+import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Car as CarIcon, LogIn, LogOut, Menu, UserPlus, CalendarPlus, Wrench } from 'lucide-react'
+
+import CarList from './pages/CarList'
+import Login from './pages/Login'
+import NewRental from './pages/NewRental'
+import VehicleRegister from './pages/VehicleRegister'
+import ProtectedRoute from './routes/ProtectedRoute'
+import AdminRoute from './routes/AdminRoute'
+import Registration from './pages/Registration'
+import { useAuth } from './auth/AuthContext'
 
 export default function App() {
-    const {authed, role, logout} = useAuth();
-    const nav = useNavigate();
-    const [open, setOpen] = useState(false);
+    const { authed, role, logout } = useAuth()
+    const nav = useNavigate()
+    const [open, setOpen] = useState(false)
+
+    const closeMenu = () => setOpen(false)
 
     return (
-        <div className="min-h-full flex flex-col">
-            {/* NAVBAR */}
-            <header
-                className="sticky top-0 z-40 border-b border-gray-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-gray-800 dark:bg-gray-900/70">
-                <nav className="container-p h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                        <Car className="size-5"/>
-                        <Link to="/" className="text-lg font-semibold tracking-tight">AutoRent</Link>
-                        <div className="hidden md:flex items-center gap-4">
-                            <Link to="/" className="nav-link">Bérelhető autók</Link>
-                            {authed && <Link to="/new-rental" className="nav-link">Autó kölcsönzés</Link>}
-                            {role === 'ADMIN' && <Link to="/admin/cars" className="nav-link">Nyilvántartó</Link>}
-                        </div>
+        <div className="min-h-dvh bg-surface text-ink">
+            {/* SIDEBAR (desktop + mobile overlay) */}
+            <aside
+                className={[
+                    'sidebar',
+                    open ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+                ].join(' ')}
+            >
+                <div className="sidebar-header">
+                    <div className="brand">
+                        <CarIcon className="size-5" />
+                        <span>AutoRent</span>
                     </div>
-                    <div className="hidden md:flex items-center gap-3">
-                        {authed ? (
-                            <button className="btn btn-ghost" onClick={() => {
-                                logout();
-                                nav('/login');
-                            }}><LogOut className="size-4" />Kilépés</button>
-                        ) : (
-                            <>
-                                <Link to="/login" className="btn btn-ghost"><LogIn className="size-4" /> Belépés</Link>
-                                <Link to="/registration" className="btn btn-primary"><UserPlus className="size-4" />Regisztráció</Link>
-                            </>
-                        )}
-                    </div>
-                    <button className="md:hidden btn btn-ghost" aria-label="Menü" onClick={() => setOpen(v => !v)}>
-                        <Menu className="size-5"/>
+                    <button
+                        className="md:hidden btn btn-ghost -mr-2"
+                        aria-label="Menü bezárása"
+                        onClick={() => setOpen(false)}
+                    >
+                        ✕
                     </button>
+                </div>
+
+                <nav className="sidebar-nav">
+                    <Link to="/" onClick={closeMenu} className="nav-item">
+                        <CarIcon className="size-4" />
+                        Bérelhető autók
+                    </Link>
+
+                    {authed && (
+                        <Link to="/new-rental" onClick={closeMenu} className="nav-item">
+                            <CalendarPlus className="size-4" />
+                            Autó kölcsönzés
+                        </Link>
+                    )}
+
+                    {role === 'ADMIN' && (
+                        <Link to="/admin/cars" onClick={closeMenu} className="nav-item">
+                            <Wrench className="size-4" />
+                            Nyilvántartó
+                        </Link>
+                    )}
                 </nav>
-                {/* Mobile menu */}
-                {open && (
-                    <div className="md:hidden border-t border-gray-200 dark:border-gray-800">
-                        <div className="container-p py-3 flex flex-col gap-2">
-                            <Link to="/" className="nav-link" onClick={() => setOpen(false)}>Bérelhető autók</Link>
-                            {authed && <Link to="/new-rental" className="nav-link" onClick={() => setOpen(false)}>Autó
-                                kölcsönzés</Link>}
-                            {role === 'ADMIN' && <Link to="/admin/cars" className="nav-link"
-                                                       onClick={() => setOpen(false)}>Nyilvántartó</Link>}
-                            <div className="pt-2 border-t border-gray-200 dark:border-gray-800"/>
-                            {authed ? (
-                                <button className="btn btn-ghost w-full" onClick={() => {
-                                    logout();
-                                    nav('/login');
-                                }}>Kilépés</button>
-                            ) : (
-                                <div className="flex gap-2">
-                                    <Link to="/login" className="btn btn-ghost flex-1"
-                                          onClick={() => setOpen(false)}>Belépés</Link>
-                                    <Link to="/registration" className="btn btn-primary flex-1"
-                                          onClick={() => setOpen(false)}>Regisztráció</Link>
-                                </div>
-                            )}
+
+                <div className="sidebar-footer">
+                    {!authed ? (
+                        <div className="grid gap-2">
+                            <Link to="/login" onClick={closeMenu} className="btn btn-ghost w-full">
+                                <LogIn className="size-4" />
+                                Belépés
+                            </Link>
+                            <Link to="/registration" onClick={closeMenu} className="btn btn-primary w-full">
+                                <UserPlus className="size-4" />
+                                Regisztráció
+                            </Link>
                         </div>
+                    ) : (
+                        <button
+                            className="btn btn-ghost w-full"
+                            onClick={() => {
+                                logout()
+                                nav('/login')
+                            }}
+                        >
+                            <LogOut className="size-4" />
+                            Kilépés
+                        </button>
+                    )}
+                </div>
+            </aside>
+
+            {/* MOBILE TOPBAR */}
+            <header className="md:hidden sticky top-0 z-40 bg-surface/90 backdrop-blur border-b border-line">
+                <div className="container-p h-14 flex items-center justify-between">
+                    <button
+                        className="btn btn-ghost"
+                        aria-label="Menü"
+                        onClick={() => setOpen((v) => !v)}
+                    >
+                        <Menu className="size-5" />
+                    </button>
+                    <div className="flex items-center gap-2 font-semibold">
+                        <CarIcon className="size-5" />
+                        AutoRent
                     </div>
-                )}
+                    <div className="w-9" />
+                </div>
             </header>
 
-
             {/* CONTENT */}
-            <main className="container-p flex-1 py-8">
-                <Routes>
-                    <Route path="/" element={<CarList/>}/>
-                    <Route path="/login" element={<Login/>}/>
-                    <Route path="/registration" element={<Registration/>}/>
-                    <Route path="/new-rental" element={<ProtectedRoute><NewRental/></ProtectedRoute>}/>
-                    <Route path="/admin/cars" element={<AdminRoute><VehicleRegister/></AdminRoute>}/>
-                    <Route path="*" element={<Navigate to="/"/>}/>
-                </Routes>
+            <main className="content">
+                <div className="container-p py-8">
+                    <Routes>
+                        <Route path="/" element={<CarList />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/registration" element={<Registration />} />
+                        <Route
+                            path="/new-rental"
+                            element={
+                                <ProtectedRoute>
+                                    <NewRental />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/cars"
+                            element={
+                                <AdminRoute>
+                                    <VehicleRegister />
+                                </AdminRoute>
+                            }
+                        />
+                        <Route path="*" element={<Navigate to="/" />} />
+                    </Routes>
+                </div>
+
+                <footer className="mt-auto border-t border-line">
+                    <div className="container-p py-6 text-sm text-muted">
+                        © {new Date().getFullYear()} AutoRent
+                    </div>
+                </footer>
             </main>
 
-
-            <footer className="border-t border-gray-200 dark:border-gray-800">
-                <div className="container-p py-6 text-sm text-gray-500">© {new Date().getFullYear()} AutoRent</div>
-            </footer>
+            {/* BACKDROP (mobile) */}
+            {open && (
+                <button
+                    aria-label="Menü háttér"
+                    className="fixed inset-0 z-30 bg-black/30 md:hidden"
+                    onClick={() => setOpen(false)}
+                />
+            )}
         </div>
-    );
+    )
 }
-
-

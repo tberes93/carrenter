@@ -11,11 +11,6 @@ import java.util.UUID;
 
 public interface RentalRepository extends JpaRepository<Rental, UUID> {
 
-    // TODO: Státusz szerinti szűrés az átfedés-keresésben
-    //  tipikusan a CANCELLED és esetleg az időközben lejárt bérléseket nem akarjuk ütközőnek tekinteni,
-    //  míg a PENDING és CONFIRMED ütközhet
-    //  ajánlott: "select r from Rental r where r.carId = :rid and r.status in ('PENDING','CONFIRMED') and r.end > :start and r.start < :end"
-
     @Query("select r from Rental r where r.carId = :rid and r.end > :start and r.start < :end")
     List<Rental> findOverlaps(@Param("rid") UUID carId,
                                @Param("start") LocalDateTime start,

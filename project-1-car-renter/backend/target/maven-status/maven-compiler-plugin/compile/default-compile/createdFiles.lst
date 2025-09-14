@@ -5,10 +5,12 @@ com\exam\carrenter\model\interfaces\CarRepository.class
 com\exam\carrenter\model\interfaces\UserRepository.class
 com\exam\carrenter\services\JwtService.class
 com\exam\carrenter\config\SecurityConfig.class
+com\exam\carrenter\config\TestCorsConfig$1.class
 com\exam\carrenter\controller\AuthController.class
 com\exam\carrenter\model\dto\AuthResponse.class
 com\exam\carrenter\controller\RentalController.class
 com\exam\carrenter\model\Car.class
+com\exam\carrenter\config\TestCorsConfig.class
 com\exam\carrenter\services\AuthService.class
 com\exam\carrenter\model\User.class
 com\exam\CarRenterApiApplication.class

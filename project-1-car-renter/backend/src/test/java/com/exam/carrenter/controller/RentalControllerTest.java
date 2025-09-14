@@ -65,7 +65,8 @@ class RentalControllerTest {
         Mockito.when(users.findByEmail(email)).thenReturn(Optional.of(user));
 
 
-        Rental saved = new Rental(); saved.setId(UUID.randomUUID());
+        Rental saved = new Rental();
+        saved.setId(UUID.randomUUID());
         Mockito.when(service.create(any(Rental.class))).thenReturn(saved);
 
 
